@@ -1,0 +1,9 @@
+.vs/*
+bin/Debug
+game/obj/*
+**.sln
+**.vcxproj
+**.vcxproj.**
+.vscode/*
+**.xcodeproj
+**.xcworkspace
