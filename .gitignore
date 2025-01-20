@@ -7,3 +7,4 @@ game/obj/*
 .vscode/*
 **.xcodeproj
 **.xcworkspace
+obj/*
