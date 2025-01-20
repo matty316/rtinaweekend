@@ -1,14 +1,14 @@
-workspace "WorkspaceName"
+workspace "rtinaweekend"
     configurations { "Debug", "Release" }
     platforms { "Win64" }
 
-project "ProjectName"
+project "rtinaweekend"
     kind "ConsoleApp"
     language "C++"
     targetdir "bin/%{cfg.buildcfg}"
     cppdialect "C++23"
 
-    files { "include/**.h", "src/**.c", "src/**.cpp" }
+    files { "include/**.h", "include/**.hpp", "src/**.c", "src/**.cpp" }
 
     includedirs { "include" }
     includedirs { "src" }
