@@ -5,6 +5,7 @@ public:
 	float aspect_ratio = 1.0f;
 	int image_width = 100;
 	int samples_per_pixel = 10;
+	int max_depth = 10;
 
 	void render(const hittable& world) {
 		init();
@@ -17,7 +18,7 @@ public:
 				color pixel_color{ 0.0f, 0.0f, 0.0f };
 				for (int sample = 0; sample < samples_per_pixel; sample++) {
 					ray r = get_ray(i, j);
-					pixel_color += ray_color(r, world);
+					pixel_color += ray_color(r, max_depth, world);
 				}
 				write_color(std::cout, pixel_samples_scale * pixel_color);
 			}
@@ -70,10 +71,17 @@ private:
 		return glm::vec3(random_float() - 0.5f, random_float() - 0.5f, 0.0f);
 	}
 
-	color ray_color(const ray& r, const hittable& world) {
+	color ray_color(const ray& r, int depth, const hittable& world) {
+		if (depth <= 0)
+			return color(0.0f, 0.0f, 0.0f);
+
 		hit_record rec;
-		if (world.hit(r, interval(0, INFINITY), rec)) {
-			return 0.5f * (rec.normal + color(1.0f, 1.0f, 1.0f));
+		if (world.hit(r, interval(0.001f, INFINITY), rec)) {
+			ray scattered;
+			color attenuation;
+			if (rec.mat->scatter(r, rec, attenuation, scattered))
+				return attenuation * ray_color(scattered, depth - 1, world);
+			return color(0.0f, 0.0f, 0.0f);
 		}
 		glm::vec3 unit_direction = glm::normalize(r.direction);
 		auto a = 0.5f * (unit_direction.y + 1.0f);

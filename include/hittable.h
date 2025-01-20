@@ -1,8 +1,11 @@
 #pragma once
 
+class material;
+
 struct hit_record {
 	point p;
 	glm::vec3 normal;
+	std::shared_ptr<material> mat;
 	float t;
 	bool front_face;
 
@@ -18,7 +21,7 @@ struct hittable {
 
 struct sphere : public hittable {
 public:
-	sphere(const point center, float radius) : center(center), radius(glm::max<float>(0.0f, radius)) {}
+	sphere(const point center, float radius, std::shared_ptr<material> mat) : center(center), radius(glm::max<float>(0.0f, radius)), mat(mat) {}
 
 	bool hit(const ray& r, interval ray_t, hit_record& rec) const override {
 		glm::vec3 oc = center - r.origin;
@@ -42,17 +45,19 @@ public:
 		rec.p = r.at(rec.t);
 		glm::vec3 outward_normal = (rec.p - center) / radius;
 		rec.set_face_normal(r, outward_normal);
+		rec.mat = mat;
 
 		return true;
 	}
 private:
 	point center;
 	float radius;
+	std::shared_ptr<material> mat;
 };
 
 struct hittable_list : public hittable {
 public:
-	std::vector<std::unique_ptr<hittable>> objects;
+	std::vector<std::shared_ptr<hittable>> objects;
 
 	bool hit(const ray& r, interval ray_t, hit_record& rec) const override {
 		hit_record temp_rec;
